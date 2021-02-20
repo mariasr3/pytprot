@@ -5,6 +5,8 @@
 
 import sys
 sys.path.append('/home/oth/anaconda3/lib/python3.8/site-packages') # Add anaconda path
+# This is just because my PYTHONPATH is not correctly set, and somehow it does not work properly for
+# importing numpy, scipy or BioPython
 
 import argparse
 import os
