@@ -9,5 +9,18 @@ Esto casi mejor hacerlo con MarkDown bien bonito, pero para tener el archivo ya.
 I just go to the directory where the setup.py is and then use:
 
     $ pip install -e .
+    
+But this is just to test it locally. If we want to upload it to PyPI, what we need to do is:
 
-This downloads (if required) the necessary packages, and just basically imports all the scripts (although there's only one so far)
+1. Download the latest version from the repo (**Watch out for the version**)
+2. Go to the folder where the setup.py is
+3. Use this commnad to build the distribution
+
+    $ python setup.py sdist
+   
+4. Then, upload it to PyPI with:
+
+    twine upload dist/*
+
+
+5. Then, to use it just install it with pip (**Watch out with the installation path**)
