@@ -41,28 +41,48 @@ for pairs in pdblist:
 
 #print(test_project.alignment(dictmodels))
 
-superimpose=[]
-superimp={}
+
+def get_atoms_list(chain):
+    """Creates a list of the atoms only taking CA or P for protein and acid nucleics, respectively.
+    This list of atoms will be lately used in the superimposition process."""
+    atom_id = "CA"
+    atoms = chain.get_atoms()
+    atoms_list = []
+    for atom in atoms:
+        atoms_list.append(atom)
+    return atoms_list
+
+
+
+pairs_list=[]
 for id, pairs in dictmodels.items():
-    superimp={}
+    p=[]
     for chain in pairs:
-        id=chain.id
-        ppb=PPBuilder().build_peptides(chain)
-        seq=ppb[0].get_sequence()
-        superimp[id]=seq
-    superimpose.append(superimp)
+        p.append(chain)
+    pairs_list.append(p)
 
 
-fixed_atoms=[]
-moving_atoms=[]
-for pair in superimpose:
-    for id1, fixed in pair.items():
-        print(id1, fixed)
+for single_pair in pairs_list:
+    fixed=single_pair[0]
+    moving=single_pair[1]
+    fixed_atoms = get_atoms_list(fixed)
+    moving_atoms = get_atoms_list(moving)
 
-        #for ref_res, alt_res, amino, allow in zip(fixed, moving, use) :
-        #    assert ref_res.resname == alt_res.resname
-        #    assert ref_res.id      == alt_res.id
-        #    if allow :
-                #CA = alpha carbon
-        #        ref_atoms.append(ref_res['CA'])
-        #        alt_atoms.append(alt_res['CA'])
+    super_imposer = Superimposer()
+    super_imposer.set_atoms(fixed_atoms, moving_atoms)
+    super_imposer.apply(model.get_atoms())
+    print (super_imposer.rms)
+
+
+"""
+#prova amb cadenes = length
+fixed=pairs_list[1][0]
+moving=pairs_list[1][1]
+fixed_atoms = get_atoms_list(fixed)
+moving_atoms = get_atoms_list(moving)
+
+super_imposer = Superimposer()
+super_imposer.set_atoms(fixed_atoms, moving_atoms)
+super_imposer.apply(model.get_atoms())
+print (super_imposer.rms)
+"""
