@@ -42,9 +42,8 @@ for pairs in pdblist:
 #print(test_project.alignment(dictmodels))
 
 
+#obtain atom sequence for a given chain
 def get_atoms_list(chain):
-    """Creates a list of the atoms only taking CA or P for protein and acid nucleics, respectively.
-    This list of atoms will be lately used in the superimposition process."""
     atom_id = "CA"
     atoms = chain.get_atoms()
     atoms_list = []
@@ -54,6 +53,7 @@ def get_atoms_list(chain):
 
 
 
+#put all pairs in a list of lists to further iterate
 pairs_list=[]
 for id, pairs in dictmodels.items():
     p=[]
@@ -62,12 +62,14 @@ for id, pairs in dictmodels.items():
     pairs_list.append(p)
 
 
+#Compare within the pair
 for single_pair in pairs_list:
-    fixed=single_pair[0]
-    moving=single_pair[1]
+    fixed=single_pair[0] #first seq of the pair will be the fixed
+    moving=single_pair[1] #second seq of the pair will be the moving
     fixed_atoms = get_atoms_list(fixed)
     moving_atoms = get_atoms_list(moving)
 
+#Superimposition
     super_imposer = Superimposer()
     super_imposer.set_atoms(fixed_atoms, moving_atoms)
     super_imposer.apply(model.get_atoms())
