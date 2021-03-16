@@ -26,7 +26,7 @@ With this, the package and its dependencies will be automatically installed with
 First, you have to copy the GitHub repository to a given folder.
 
 ```
-git clone https://github.com/mariasr3/SBI-Project.git
+git clone https://github.com/mariasr3/pytprot.git
 
 ```
 
