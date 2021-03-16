@@ -14,7 +14,7 @@ pip3 install pytprot
 
 ```
 
-With, this, the package and its dependencies will be automatically installed within your PYTHONPATH. 
+With this, the package and its dependencies will be automatically installed within your PYTHONPATH. 
 
 ### 1.2. Through github
 
