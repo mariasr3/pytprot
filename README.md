@@ -1,11 +1,9 @@
-# pytprot
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/mariasr3/pytprot/blob/main/LICENSE.txt)
 
 
-
-
+# pytprot
 
 **pytprot** is a web-app and command-line package to build protein multicomplexes from
 binary chain interactions.
