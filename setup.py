@@ -1,19 +1,20 @@
 
-# SBI/PYT MODULE SETUP FILE
+# pytprot SETUP FILE
 ##############################
 
 
 from distutils.core import setup
 import setuptools
 
-setup(name = "SBI_PYT_prj",
-      version='0.0.1.',
-      description="no tengo ni idea",
+setup(name = "pytprot",
+      version='0.5.',
+      description="Macrocomplex builder from PPIs",
       long_description=open('README.md').read(),
-      author="maria joana oth",
+      author="Maria Sopena, Joana Llauradó, Othmane Hayoun",
       license='LICENSE.txt',
       packages=setuptools.find_packages(),
-      scripts=['PPI_main/I_O_args.py', 'PPI_main/__init__.py'],
+      scripts=['./pytprot/main.py', './pytprot/__init__.py', './pytprot/parser.py', './pytprot/functions.py',
+               './pytprot/test_pyprot_dash.py'],
       install_requires=["BioPython", "numpy", "seaborn", "matplotlib", "setuptools"])
 
 
