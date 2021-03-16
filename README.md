@@ -21,7 +21,7 @@ With, this, the package and its dependencies will be automatically installed wit
 First, you have to copy the GitHub repository to a given folder.
 
 ```
-git clone
+git clone https://github.com/mariasr3/SBI-Project.git
 
 ```
 
