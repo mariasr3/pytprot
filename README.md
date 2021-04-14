@@ -121,7 +121,7 @@ Which will display the following arguments:
 - **-d or --contact_dist**: Optional. Only employed if the macrocomplex flag is active. By default the distance between the CA backbone of two chains to consider they are interacting is set to 12 Å. 
 - **-cn or --contact_num**: Optitonal. Only employed if the macrocomplex flag is active. By default there needs to be a minimum of 8 residues to interact at a distance *d* between two chains to interact.
 
-#### 4.1.1. Example 1.a: 1GZX, interacting chains input
+#### 4.1.1. Example 1: 1GZX, interacting chains input
 
 In order to show the basic functioning of the program, we will use the [1gzx](https://www.rcsb.org/structure/1GZX) structure, which is the T-state haemoglobin, which is a hetero-4-mer. As an input, we have three .pdb files with interacting chains (1gzx_A_B.pdb, 1gzx_A_C.pdb, 1gzx_A_D.pdb) within a folder named "1gzx", and a stoichiometry file (1gzx_stoichiometry.txt). We will assume that pytprot is being executed from the installation folder named *pytprot*.
 
@@ -145,7 +145,7 @@ This process is identical, even for larger proteins that also contain DNA.
 **Note**: All these input and output files for 1gzx are included in the package in order to show the correct naming format for the PDB files and the specific format of the stoichiometry file.
 
 
-#### 4.1.2. Example 2.a: 6GMH, multicomplex input
+#### 4.1.2. Example 2: 6GMH, multicomplex input
 
 In order to also show how the program can work with macrocomplexes, we will use [**6gmh**](https://www.rcsb.org/structure/6gmh), which is the structure for the Activated Transcription Complex Pol II, and a hetero-20-mer. Here, we will only use one file, "6gmh.pdb", in a folder named "6gmh", and a stoichiometry file, "6gmh_stoichiometry.txt". We will assume that pytprot is being executed from the installation folder named *pytprot*. 
 
