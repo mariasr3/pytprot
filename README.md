@@ -61,12 +61,18 @@ And the following files:
 * README.md: MarkDown document that contains the Tutorial, and some biological information background.
 * setup.py: Python script that contains the information needed in order to install the package.
 
+
 ### 2.1. Script detail: The different pytprot submodules
 
 Within the `pytprot` folder, we find the different scripts that, altogether form the whole package. These are:
 
-- main.py: The main module of the script, where the actual scripting pipeline is layed-down. This includes the checking for correct inputs, the processing of the input interacting chains or macrocomplex, the building of the macrocomplex and saving the structure. All the functions employed in this script are imported from the other scripts within the folder.
-- inputfunctions.py: The 
+- **__init__.py**: The *init* script that indicates which scripts from this same folder have to be loaded.
+- **main.py**: The main module of the script, where the actual scripting pipeline is layed-down. This includes the checking for correct inputs, the processing of the input interacting chains or macrocomplex, the building of the macrocomplex and saving the structure. All the functions employed in this script are imported from the other scripts within the folder.
+- **inputfunctions.py**: The module with which the inputs will be processed in order to end up having a common Python dictionary object.
+- **chainfunctions.py**: The module with which the similar chains are found.
+- **modelfunctions.py**: The module with which the actual model is built.
+- **parser.py**: The *argparser* module script. Allocates the different command-line arguments.
+- **pytprot_dash.py**: This script allows for opening the Dash pytprot app. The pipeline is similar to that of the main script, and it also references the different function scripts.
 
 
 ## 3. The pytprot pipeline
