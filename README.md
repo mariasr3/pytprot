@@ -78,6 +78,9 @@ Within the `pytprot` folder, we find the different scripts that, altogether form
 - **pytprot_dash.py**: This script allows for opening the Dash pytprot app. The pipeline is similar to that of the main script, and it also references the different function scripts.
 
 
+Nevertheless, a more detailed explanation of all the submodels, and their corresponding functions, is detailed on the Theory.pdf.
+
+
 
 ## 3. The pytprot pipeline
 
