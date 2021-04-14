@@ -16,6 +16,7 @@
       - [1.3. Through PyPi (Recommended)](#13-through-pypi-recommended)
       - [1.2. Through github](#12-through-github)
   - [2. Module structure](#2-module-structure)
+    - [2.1. Script detail: The different pytprot submodules](#21-script-detail-the-different-pytprot-submodules)
   - [3. The pytprot pipeline](#3-the-pytprot-pipeline)
   - [4. How to use *pytprot*: A quick tutorial](#4-how-to-use-pytprot-a-quick-tutorial)
 
@@ -59,6 +60,13 @@ And the following files:
 * LICENSE.txt: Contains the MIT license for the distribution of the *pytprot* module source code.
 * README.md: MarkDown document that contains the Tutorial, and some biological information background.
 * setup.py: Python script that contains the information needed in order to install the package.
+
+### 2.1. Script detail: The different pytprot submodules
+
+Within the `pytprot` folder, we find the different scripts that, altogether form the whole package. These are:
+
+- main.py: The main module of the script, where the actual scripting pipeline is layed-down. This includes the checking for correct inputs, the processing of the input interacting chains or macrocomplex, the building of the macrocomplex and saving the structure. All the functions employed in this script are imported from the other scripts within the folder.
+- inputfunctions.py: The 
 
 
 ## 3. The pytprot pipeline
