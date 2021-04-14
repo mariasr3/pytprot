@@ -8,6 +8,17 @@
 
 *Joana Llauradó, Maria Sopena, Othmane Hayoun*
 
+
+
+- [pyprot: PPI-based multicomplex builder](#pyprot-ppi-based-multicomplex-builder)
+  - [0. Pre-requisites](#0-pre-requisites)
+  - [1. Installation](#1-installation)
+      - [1.3. Through PyPi (Recommended)](#13-through-pypi-recommended)
+      - [1.2. Through github](#12-through-github)
+  - [2. Module structure](#2-module-structure)
+  - [3. The pytprot pipeline](#3-the-pytprot-pipeline)
+  - [4. How to use *pytprot*: A quick tutorial](#4-how-to-use-pytprot-a-quick-tutorial)
+
 ## 0. Pre-requisites
 
 In order to run **pytprot**, it is compulsory to have a Python3 interpreter, and strongly recommended to have any biomolecule visualization software, such as Chimera or ICM. This module relies heavily on the **biopython** Python module, so it is also strongly advised to download said module.
@@ -49,7 +60,13 @@ And the following files:
 * README.md: MarkDown document that contains the Tutorial, and some biological information background.
 * setup.py: Python script that contains the information needed in order to install the package.
 
-## 3. pyprot: command-line arguments
+
+## 3. The pytprot pipeline
+
+
+
+## 4. How to use *pytprot*: A quick tutorial
+
 
 To know which arguments needs the program to run or which ones can be determined by the user, type in the terminal: 
 python3 main.py -h (or --help)
