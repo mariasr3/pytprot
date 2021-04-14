@@ -77,6 +77,19 @@ Within the `pytprot` folder, we find the different scripts that, altogether form
 
 ## 3. The pytprot pipeline
 
+The *pytprot* module follows a specific pipeline in order to build the models.
+
+1. **Input recognition**: In order for it to correctly work, *pytprot* only allows a specific type of input files. It has to be a folder with one or more PDB files. If there is only one PDB file, it is understood as a macrocomplex, independently of its filename. If there is a list of PDB files, these are understood to be interacting chain pairs, which have to be named as 1gzx_A_B.pbd or 1gzx_A_ED.pdb, referring to the structure name (1gzx) and the pair of chains (A and B), or the pair of interacting protein-double-DNA chains (A and ED). The stoichiometry input file is also read at this point. This **.txt** must also have a specific format.
+ 
+2. **Chain processing**: Given a macrocomplex, it is broken into single chains in order to obtain the interacting chains¹, based on the distance at which there is a contact between chains and the number of contacts. At this point, the program also checks and deletes redundant interactions². If a set of interacting chains is already provided, this step is not needed. After this, the program searches for similar chains, that is, chains with a sequence identity higher than 95%, as these will be the ones that will allow for superimposition.
+
+3. **Model building**: If a stoichiometry file is provided, it checks if it is actually correct or not. If it is not, the program will proceed with ???. Then, it takes into account the information from the similar chains, all the provided chains, the stoichiometry (if provided) in order to build the model. This is an iterative process that adds pairs to the model if one chain of the pair finds a similar chain within the model. Then, it superimposes both pairs, obtains a rotran matrix, and applies it to the interacting chain pair to the one superimposed. If there are no clashes at 1.9 Å with any chain of the model, it is added. This is repeated until all the provided interacting chain pairs are checked.
+
+The model is then saved with a specific filename that includes the model name, the number of chains and the timestamp.
+
+
+(1) Here, **interacting chains** refers to a distance of 12 Å and 8 number of contacts to consider two chains to be interacting, by default. 
+(2) **Redundant chains** are pairs of interacting chains that have one common similar chain, and the other pair of chains produce clashes between them, at a 1.9 Å distance.
 
 
 ## 4. How to use *pytprot*: A quick tutorial
