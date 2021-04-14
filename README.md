@@ -89,6 +89,7 @@ The model is then saved with a specific filename that includes the model name, t
 
 
 (1) Here, **interacting chains** refers to a distance of 12 Å and 8 number of contacts to consider two chains to be interacting, by default. 
+
 (2) **Redundant chains** are pairs of interacting chains that have one common similar chain, and the other pair of chains produce clashes between them, at a 1.9 Å distance.
 
 
