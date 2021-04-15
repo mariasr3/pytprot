@@ -164,15 +164,26 @@ def chain_processing(str_dict, verbose=True):
 
     eq_str_dict = copy.deepcopy(str_dict)  # deepcopy in order to have different id() for the object and all references
 
+    #for struct in eq_str_dict.values():
+    #    for chains in struct.get_chains():
+    #        chains2 = chains.copy()  # Work with the copies to not modify the original chain
+    #        new_chain = chains.copy()
+    #        if not isinstance(chains.id, int):  # Filtering any possible numerical ID
+    #            chains.id = alphabet.find(str(new_chain.id))
+    #            str_dict_final[name] = struct_copy
+
+    i = 0
     for struct in eq_str_dict.values():
         for chains in struct.get_chains():
+            i += 1
             chains2 = chains.copy()  # Work with the copies to not modify the original chain
             new_chain = chains.copy()
-            try:
-                new_chain.id = alphabet.find(str(chains.id))  # Get the index of the alphabet string as the new chain ID
-                equivalence_chains.setdefault(new_chain, chains2)
-            except ValueError:
-                equivalence_chains.setdefault(new_chain, chains2)
+            new_chain.id = alphabet.find(str(chains.id))
+            if new_chain.id == -1:
+                new_chain.id = 100 + i
+
+            equivalence_chains.setdefault(new_chain, chains2)
+
 
     # Counting DNA and nucleotide chains
     # This is only useful if the verbose flag (-v) is active, as these objects are not used later-on in the script
@@ -199,15 +210,18 @@ def chain_processing(str_dict, verbose=True):
     str_dict_final = {}
     new_str_dict = copy.copy(str_dict)  # Avoid modifying the original str_dict
 
+    i = 0
     for name, structure in new_str_dict.items():
         struct_copy = copy.deepcopy(structure)
         for chain in struct_copy.get_chains():
+            i += 1
             new_chain = chain.copy()
-            try:   # Filtering any possible numerical ID
-                chain.id = alphabet.find(str(new_chain.id))
-                str_dict_final[name] = struct_copy
-            except ValueError:
-                str_dict_final[name] = struct_copy
+            chain.id = alphabet.find(str(new_chain.id))
+            if chain.id == -1:
+                chain.id = 100 + i
+
+            str_dict_final[name] = struct_copy
+
 
     if verbose == True:
         print("Chain IDs have been converted from letters to numbers.\n")

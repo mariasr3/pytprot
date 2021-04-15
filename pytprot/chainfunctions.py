@@ -234,9 +234,10 @@ def similar_chains(input_model_dict, type, verbose=False):
                                     seq2 = pp2.get_sequence()
                                 alignments = pw2.align.globalxx(seq1, seq2, score_only=True) # Global alignment
                                 max_length = max(len(seq1), len(seq2)) # Normalize on longest sequence
-                                identity_perc = round(alignments / max_length, 2)
-                                if identity_perc > 0.95:
-                                    similar_chains.setdefault(chain2, chain1)
+                                if not isinstance(alignments, list):
+                                    identity_perc = round(alignments / max_length, 2)
+                                    if identity_perc > 0.95:
+                                        similar_chains.setdefault(chain2, chain1)
 
     return similar_chains
 

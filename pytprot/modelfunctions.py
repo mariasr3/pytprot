@@ -1,4 +1,4 @@
-import time
+import time, random
 from Bio.PDB import *
 from Bio.PDB.PDBIO import PDBIO, Select
 import inputfunctions, chainfunctions
@@ -348,10 +348,11 @@ def model_construction(unicommon, pdb_dict, equivalent_chains, stoichiometry_inp
     for x, y in equivalent_chains.items():
         equivalent_chains_id[x.id] = y
 
-    ## SEED FOR MODEL: First pair
+    ## SEED FOR MODEL: Random.
+
     current_stoich = {}
 
-    for chain in listpairs[0]:
+    for chain in listpairs[int(random.randrange(0, len(listpairs)))]:
         added_chains.append(chain) # A list of chains is created to look for clashes when a new chain is added
         chain_to_add = equivalent_chains_id[chain.id] # Change the chain for its equivalent with a letter ID.
         new_model.add(chain_to_add) # The first pair will be added to the model and used as a starting pair
@@ -362,7 +363,7 @@ def model_construction(unicommon, pdb_dict, equivalent_chains, stoichiometry_inp
             else:
                 current_stoich[key.id] += 1
 
-    for pair2 in listpairs[1:]:
+    for pair2 in listpairs:
         model_list = list(ch for ch in added_chains)
 
         for idx, chain1 in enumerate(pair2):
@@ -392,8 +393,7 @@ def model_construction(unicommon, pdb_dict, equivalent_chains, stoichiometry_inp
                                         key_to_add = extract_key(moved_chain, unicommon)
                                         try:
                                             # If the stoichiometry for this chain is already fullfilled the program will stop and continue with the next chain
-                                            if stoich_count(current_stoich, stoichiometry_input, unicommon,
-                                                            key_to_add) == True:
+                                            if stoich_count(current_stoich, stoichiometry_input, unicommon, key_to_add) == True:
                                                 break
                                         except:
                                             pass
@@ -495,7 +495,6 @@ def save_model(final_model, pdblist, outdir, verbose=False, macrocomplex=False):
         model_name = (str(pdblist[0])).split("/")[-2]
     else:
         model_name = (str(pdblist[0]).split("/")[-1]).split("_")[0]
-        #model_name = ((str(pdblist[0])).split("/")[-1]).split("_")[0]
     # timestamp
     model_out_path = outdir
     t = time.localtime()
@@ -507,3 +506,5 @@ def save_model(final_model, pdblist, outdir, verbose=False, macrocomplex=False):
 
         if verbose:
             print(f"\nSaving the structure...\n")
+
+    print("The model has been correctly saved.")
