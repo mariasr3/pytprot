@@ -4,3 +4,9 @@
 - Most of the functions developed.
 - Struggling with the approach. Works well with simple molecules.
 - Stoichiometry not incorporated, still.
+
+
+20.03.2021:
+
+- Split functions script in three different smaller scripts.
+- Change of approach: Comparing pairs that we know are interacting.
