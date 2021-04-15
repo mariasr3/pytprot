@@ -39,6 +39,20 @@ pip3 install pytprot
 
 ```
 
+For Unix users, _pytprot_ can run without specifically invoking the Python3 interpreter with:
+
+```
+chmod +x ./path/to/pytprot/pytprot.py
+
+```
+
+Once this is done, we can just run _pytprot_ from any directory within the system with:
+
+```
+pytprot.py -i input/path -o output/path 
+
+```
+
 With, this, the package and its dependencies will be automatically installed within your PYTHONPATH, where all the pytprot folder, with the examples and the corresponding scripts, will be installed.
 
 #### 1.2. Through github
@@ -49,7 +63,11 @@ First, you have to copy the GitHub repository to a given folder, move into it, a
 git clone https://github.com/mariasr3/pytprot.git
 cd pytprot
 sudo python3 setup.py install
+
 ```
+Using the `chmod` command, as explained in Section 1.1., will allow for running _pytprot_ from any directory.
+
+
 
 ## 2. Module structure
 
