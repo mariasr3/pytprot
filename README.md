@@ -20,8 +20,10 @@
   - [3. The pytprot pipeline](#3-the-pytprot-pipeline)
   - [4. How to use *pytprot*: A quick tutorial](#4-how-to-use-pytprot-a-quick-tutorial)
     - [4.1. Running pytprot from command line](#41-running-pytprot-from-command-line)
-      - [4.1.1. Example 1.a: 1GZX, interacting chains input](#411-example-1a-1gzx-interacting-chains-input)
-      - [4.1.2. Example 2.a: 6GMH, multicomplex input](#412-example-2a-6gmh-multicomplex-input)
+      - [4.1.1. Example 1: 1GZX, interacting chains input](#411-example-1-1gzx-interacting-chains-input)
+      - [4.1.2. Example 2: 6GMH, multicomplex input](#412-example-2-6gmh-multicomplex-input)
+      - [4.1.2. Example 3: 3T72, a RMN-based input](#412-example-3-3t72-a-rmn-based-input)
+      - [4.1.2. Example 4: 6OM3, an example of a multicomplex made of assymmetric units](#412-example-4-6om3-an-example-of-a-multicomplex-made-of-assymmetric-units)
     - [4.2. Running pytprot from Dash](#42-running-pytprot-from-dash)
 
 ## 0. Pre-requisites
@@ -39,6 +41,20 @@ pip3 install pytprot
 
 ```
 
+For Unix users, _pytprot_ can run without specifically invoking the Python3 interpreter with:
+
+```
+chmod +x ./path/to/pytprot/pytprot.py
+
+```
+
+Once this is done, we can just run _pytprot_ from any directory within the system with:
+
+```
+pytprot.py -i input/path -o output/path 
+
+```
+
 With, this, the package and its dependencies will be automatically installed within your PYTHONPATH, where all the pytprot folder, with the examples and the corresponding scripts, will be installed.
 
 #### 1.2. Through github
@@ -49,7 +65,11 @@ First, you have to copy the GitHub repository to a given folder, move into it, a
 git clone https://github.com/mariasr3/pytprot.git
 cd pytprot
 sudo python3 setup.py install
+
 ```
+Using the `chmod` command, as explained in Section 1.1., will allow for running _pytprot_ from any directory.
+
+
 
 ## 2. Module structure
 
@@ -78,6 +98,9 @@ Within the `pytprot` folder, we find the different scripts that, altogether form
 - **pytprot_dash.py**: This script allows for opening the Dash pytprot app. The pipeline is similar to that of the main script, and it also references the different function scripts.
 
 
+Nevertheless, a more detailed explanation of all the submodels, and their corresponding functions, is detailed on the Theory.pdf.
+
+
 
 ## 3. The pytprot pipeline
 
@@ -87,7 +110,7 @@ The *pytprot* module follows a specific pipeline in order to build the models.
  
 2. **Chain processing**: Given a macrocomplex, it is broken into single chains in order to obtain the interacting chains¹, based on the distance at which there is a contact between chains and the number of contacts. At this point, the program also checks and deletes redundant interactions². If a set of interacting chains is already provided, this step is not needed. After this, the program searches for similar chains, that is, chains with a sequence identity higher than 95%, as these will be the ones that will allow for superimposition.
 
-3. **Model building**: If a stoichiometry file is provided, it checks if it is actually correct or not. If it is not, the program will proceed with ???. Then, it takes into account the information from the similar chains, all the provided chains, the stoichiometry (if provided) in order to build the model. This is an iterative process that adds pairs to the model if one chain of the pair finds a similar chain within the model. Then, it superimposes both pairs, obtains a rotran matrix, and applies it to the interacting chain pair to the one superimposed. If there are no clashes at 1.9 Å with any chain of the model, it is added. This is repeated until all the provided interacting chain pairs are checked.
+3. **Model building**: If a stoichiometry file is provided, it checks if it is actually correct or not. If it is not, the program will proceed with the model building without the stoichiometry, and a warning message is raised. Then, it takes into account the information from the similar chains, all the provided chains, the stoichiometry (if provided) in order to build the model. This is an iterative process that adds pairs to the model if one chain of the pair finds a similar chain within the model. Then, it superimposes both pairs, obtains a rotran matrix, and applies it to the interacting chain pair to the one superimposed. If there are no clashes at 1.9 Å with any chain of the model, it is added. This is repeated until all the provided interacting chain pairs are checked.
 
 The model is then saved with a specific filename that includes the model name, the number of chains and the timestamp.
 
@@ -114,16 +137,16 @@ Which will display the following arguments:
 
 - **-i INFILE or --input-directory INFILE**: Required. The user must provide a directory which contains the input files. **NOTE**: Said input files need to follow the correct naming convention. If not, these will not be accepted by the program.
 - **-s or --stoichiometry**: Optional. The user can handle an input **.txt file** with the model stoichiometry. It also has to follow a specific structure, as shown in the sample stoichiometry file in the package directory.
-- **-f or --force**: Optional. It forces the creation of an output directory. If it already exists, the contents are overwritten. 
+- **-f or --force**: Optional. It forces the creation of an output directory. If it already exists, the contents of said directory are overwritten.
 - **-o OUTDIR or --output-directory OUTDIR**: Required. The user must provide an ouput directory where the output files will be stored. If the output directory already exists, and the "force" flag has not been activated, the program will terminate.
 - **-v or --verbose**: Optional. It prints in the terminal some information about the process. 
 - **-m or --macrocomplex**: Optional. If the input file is a macrocomples, the user should use this option to indicate it. 
 - **-d or --contact_dist**: Optional. Only employed if the macrocomplex flag is active. By default the distance between the CA backbone of two chains to consider they are interacting is set to 12 Å. 
 - **-cn or --contact_num**: Optitonal. Only employed if the macrocomplex flag is active. By default there needs to be a minimum of 8 residues to interact at a distance *d* between two chains to interact.
 
-#### 4.1.1. Example 1.a: 1GZX, interacting chains input
+#### 4.1.1. Example 1: 1GZX, interacting chains input
 
-In order to show the basic functioning of the program, we will use the [1gzx](https://www.rcsb.org/structure/1GZX) structure, which is the T-state haemoglobin, which is a hetero-4-mer. As an input, we have three .pdb files with interacting chains (1gzx_A_B.pdb, 1gzx_A_C.pdb, 1gzx_A_D.pdb) within a folder named "1gzx", and a stoichiometry file (1gzx_stoichiometry.txt). We will assume that pytprot is being executed from the installation folder named *pytprot*.
+In order to show the basic functioning of the program, we will use the [1gzx](https://www.rcsb.org/structure/1GZX) structure, which is the T-state haemoglobin, which is a hetero-4-mer. As an input, we have three .pdb files with interacting chains (1gzx_A_B.pdb, 1gzx_A_C.pdb, 1gzx_A_D.pdb) provided by our teachers, within a folder named "1gzx", and a stoichiometry file (1gzx_stoichiometry.txt). We will assume that pytprot is being executed from the installation folder named *pytprot*.
 
 In order to run pytprot, we will need to open the terminal and write:
 
@@ -145,9 +168,9 @@ This process is identical, even for larger proteins that also contain DNA.
 **Note**: All these input and output files for 1gzx are included in the package in order to show the correct naming format for the PDB files and the specific format of the stoichiometry file.
 
 
-#### 4.1.2. Example 2.a: 6GMH, multicomplex input
+#### 4.1.2. Example 2: 6GMH, multicomplex input
 
-In order to also show how the program can work with macrocomplexes, we will use [**6gmh**](https://www.rcsb.org/structure/6gmh), which is the structure for the Activated Transcription Complex Pol II, and a hetero-20-mer. Here, we will only use one file, "6gmh.pdb", in a folder named "6gmh", and a stoichiometry file, "6gmh_stoichiometry.txt". We will assume that pytprot is being executed from the installation folder named *pytprot*. 
+In order to also show how the program can work with macrocomplexes, we will use [**6gmh**](https://www.rcsb.org/structure/6gmh), which is the structure for the Activated Transcription Complex Pol II, and a hetero-20-mer, that we have retrieved from the PDB. Here, we will only use one file, "6gmh.pdb", in a folder named "6gmh", and a stoichiometry file, "6gmh_stoichiometry.txt". We will assume that pytprot is being executed from the installation folder named *pytprot*. 
 
 To run it:
 
@@ -156,8 +179,29 @@ python3 ./pytprot/pytprot.py -i ./example_files/6gmh -o ./example_output_files -
 
 ```
 
-We have indicated the input, output file and the **-f** flag the same way as before. As this is a macrocomplex, we will need to indicate the **-m** flag. Within the macrocomplex processsing, we can indicate a specific contact distance (Å) with **-d** and a specific number of contacts with **-nc**. For this example, we will assume two chains to be interacting if there are 5 or more contacts at 8 Å between their CA backbone. As the **-v** flag is set, when running the program, we will see the processing information on the Terminal. After it finishes running, the output model will be saved with a timestamp and the number of chains that the model has. 
+We have indicated the input, output file and the **-f** flag the same way as before. As this is a macrocomplex, we will need to indicate the **-m** flag. Within the macrocomplex processsing, we can indicate a specific contact distance (Å) with **-d** and a specific number of contacts with **-nc**. For this example, we will assume two chains to be interacting if there are 5 or more contacts at 8 Å between their CA backbone. As the **-v** flag is set, when running the program, we will see the processing information on the Terminal. After it finishes running, the output model will be saved with a timestamp and the number of chains that the model has, in the provided output folder.
 
+
+We will also present some relevant cases in which _pytprot_ can struggle to model a specific macrocomplex, and the possible workarounds.
+
+#### 4.1.2. Example 3: 3T72, a RMN-based input
+
+If we want to model the DNA-transcription Activation Subcomplex of _E. coli_, which is [3T72](https://www.rcsb.org/structure/3T72), _pytprot_ will most likely produce an error related to the chain ID's. This is a consequence of the input model having many more than 52 chains named differently, which is the maximum that _pytprot_ can take (See Theory & Analysis). Instead, what we can use for modelling is any of the **Biological assemblies**, also available to download from its PDB page. With this one, we are able to perfectly reconstruc it with _pytprot_:
+
+<img src="3T72.png" alt="3T72 complex" width="300">
+
+
+#### 4.1.2. Example 4: 6OM3, an example of a multicomplex made of assymmetric units
+
+Another limitation of the program is that it cannot correctly model for proteins whose Biological Assembly is composed of the combination of different. For example, for the Orc1 BAH domain (in complex with a nucleosome), which is [6OM3](https://www.rcsb.org/structure/6OM3) from PDB. If we download the PDB, it contains two assymmetric units, which form the actual biological assembly. _pytprot_ can, without indicating the stoichiometry, provide a model that contains both subunits, although wrongly placed:
+
+<img src="6om3_complete_nostoich.png" alt="6om3 complex" width="400">
+
+
+With the way _pytprot_ fetches the stoichiometry, it is not possible to correctly build the model. Nevertheless, if we download one the asymmetric units, which are found in its same PDB page, it can be almost perfectly built with _pytprot_, whenever stoichiometry is provided.
+
+
+**Note**: A more detailed analysis of different models built with _pytprot_ is available in the **Theory & Analysis.pdf**.
 
 
 ### 4.2. Running pytprot from Dash
@@ -172,11 +216,15 @@ python3 /path/to/pytprot/pytprot_dash.py
 
 This will prompt, on the command line, a link that, when clicked, will open a tab in your default browser, that looks like this:
 
-![pytprot_dash](./images/pytprot.png)
+![pytprot Dash GUI](pytprot.png)
 
-Using the app is quite simple, we will first need to upload the corresponding PDB and stoichiometry files (*It is advisable to upload them all at once*). It automatically detects, depending on the number of files, if the input is a set of interacting chain-pairs or a macrocomplex. If it is the latter case, we can also indicate the contact distance or the number of contacts in the **Multicomplex assembly parameters**. **NOTE:** The contact distance and number of contact parameters, if different from the default ones, must be indicated **before** uploading the files.
+
+
+
+Using the app is quite simple, we will first need to upload the corresponding PDB and stoichiometry files (*It is advisable to upload them all at once*). It automatically detects, depending on the number of files, if the input is a set of interacting chain-pairs or a macrocomplex. If it is the latter case, we can also indicate the contact distance or the number of contacts in the **Multicomplex assembly parameters**. 
+
+**NOTE:** The contact distance and number of contact parameters, if different from the default ones, must be indicated **before** uploading the files.
 
 The **Upload information** window shows some basic information regarding the input files.
 
-After processing the model, its filename will appear under the **Models built** section. In order to access it, we will need to retrieve it from the corresponding folder.
-
+After processing the model, its filename will appear under the **Models built** section. In order to access it, we will need to retrieve it from the "app_uploaded_files/built_models" folder located in the current working directory, or through the link that Dash returns after building the model.
