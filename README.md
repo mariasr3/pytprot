@@ -196,10 +196,10 @@ Another limitation of the program is that it cannot correctly model for proteins
 <img src="6om3_complete_nostoich.png" alt="6om3 complex" width="400">
 
 
-With the way _pytprot_ fetches the stoichiometry, it is not possible to correctly build the model. Nevertheless, if we download one the asymmetric units, which are found in its same PDB page, it can be almost perfectly built with _pytprot_, whenever stoichiometry is provided:
+With the way _pytprot_ fetches the stoichiometry, it is not possible to correctly build the model. Nevertheless, if we download one the asymmetric units, which are found in its same PDB page, it can be almost perfectly built with _pytprot_, whenever stoichiometry is provided.
 
 
-
+**Note**: A more detailed analysis of different models built with _pytprot_ is available in the **Theory & Analysis.pdf**.
 
 
 ### 4.2. Running pytprot from Dash
