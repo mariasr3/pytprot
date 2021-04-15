@@ -20,8 +20,10 @@
   - [3. The pytprot pipeline](#3-the-pytprot-pipeline)
   - [4. How to use *pytprot*: A quick tutorial](#4-how-to-use-pytprot-a-quick-tutorial)
     - [4.1. Running pytprot from command line](#41-running-pytprot-from-command-line)
-      - [4.1.1. Example 1.a: 1GZX, interacting chains input](#411-example-1a-1gzx-interacting-chains-input)
-      - [4.1.2. Example 2.a: 6GMH, multicomplex input](#412-example-2a-6gmh-multicomplex-input)
+      - [4.1.1. Example 1: 1GZX, interacting chains input](#411-example-1-1gzx-interacting-chains-input)
+      - [4.1.2. Example 2: 6GMH, multicomplex input](#412-example-2-6gmh-multicomplex-input)
+      - [4.1.2. Example 3: 3T72, a RMN-based input](#412-example-3-3t72-a-rmn-based-input)
+      - [4.1.2. Example 4: 6OM3, an example of a multicomplex made of assymmetric units](#412-example-4-6om3-an-example-of-a-multicomplex-made-of-assymmetric-units)
     - [4.2. Running pytprot from Dash](#42-running-pytprot-from-dash)
 
 ## 0. Pre-requisites
