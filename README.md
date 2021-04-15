@@ -180,6 +180,26 @@ python3 ./pytprot/pytprot.py -i ./example_files/6gmh -o ./example_output_files -
 We have indicated the input, output file and the **-f** flag the same way as before. As this is a macrocomplex, we will need to indicate the **-m** flag. Within the macrocomplex processsing, we can indicate a specific contact distance (Å) with **-d** and a specific number of contacts with **-nc**. For this example, we will assume two chains to be interacting if there are 5 or more contacts at 8 Å between their CA backbone. As the **-v** flag is set, when running the program, we will see the processing information on the Terminal. After it finishes running, the output model will be saved with a timestamp and the number of chains that the model has, in the provided output folder.
 
 
+We will also present some relevant cases in which _pytprot_ can struggle to model a specific macrocomplex, and the possible workarounds.
+
+#### 4.1.2. Example 3: 3T72, a RMN-based input
+
+If we want to model the DNA-transcription Activation Subcomplex of _E. coli_, which is [3T72](https://www.rcsb.org/structure/3T72), _pytprot_ will most likely produce an error related to the chain ID's. This is a consequence of the input model having many more than 52 chains named differently, which is the maximum that _pytprot_ can take (See Theory & Analysis). Instead, what we can use for modelling is any of the **Biological assemblies**, also available to download from its PDB page. With this one, we are able to perfectly reconstruc it with _pytprot_:
+
+![3T72 complex](3T72.png)
+
+
+#### 4.1.2. Example 4: 6OM3, an example of a multicomplex made of assymmetric units
+
+Another limitation of the program is that it cannot correctly model for proteins whose Biological Assembly is composed of the combination of different. For example, for the Orc1 BAH domain (in complex with a nucleosome), which is [6OM3](https://www.rcsb.org/structure/6OM3) from NCBI. If we download the PDB, it contains two assymmetric units, which form the actual biological assembly. _pytprot_ can, without indicating the stoichiometry, provide a model that contains both subunits, although wrongly placed:
+
+![6om3 complex](6om3_complete_nostoich.png)
+
+With the way _pytprot_ fetches the stoichiometry, it is not possible to correctly build the model. Nevertheless, if we download one the asymmetric units, which are found in its same PDB page, it can be almost perfectly built with _pytprot_, whenever stoichiometry is provided:
+
+
+
+
 
 ### 4.2. Running pytprot from Dash
 
