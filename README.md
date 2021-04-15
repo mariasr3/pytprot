@@ -186,14 +186,14 @@ We will also present some relevant cases in which _pytprot_ can struggle to mode
 
 If we want to model the DNA-transcription Activation Subcomplex of _E. coli_, which is [3T72](https://www.rcsb.org/structure/3T72), _pytprot_ will most likely produce an error related to the chain ID's. This is a consequence of the input model having many more than 52 chains named differently, which is the maximum that _pytprot_ can take (See Theory & Analysis). Instead, what we can use for modelling is any of the **Biological assemblies**, also available to download from its PDB page. With this one, we are able to perfectly reconstruc it with _pytprot_:
 
-<img src="3T72.png" alt="3T72 complex" width="400">
+<img src="3T72.png" alt="3T72 complex" width="300">
 
 
 #### 4.1.2. Example 4: 6OM3, an example of a multicomplex made of assymmetric units
 
 Another limitation of the program is that it cannot correctly model for proteins whose Biological Assembly is composed of the combination of different. For example, for the Orc1 BAH domain (in complex with a nucleosome), which is [6OM3](https://www.rcsb.org/structure/6OM3) from NCBI. If we download the PDB, it contains two assymmetric units, which form the actual biological assembly. _pytprot_ can, without indicating the stoichiometry, provide a model that contains both subunits, although wrongly placed:
 
-<img src="6om3_complete_nostoich.png" alt="6om3 complex" width="300">
+<img src="6om3_complete_nostoich.png" alt="6om3 complex" width="400">
 
 
 With the way _pytprot_ fetches the stoichiometry, it is not possible to correctly build the model. Nevertheless, if we download one the asymmetric units, which are found in its same PDB page, it can be almost perfectly built with _pytprot_, whenever stoichiometry is provided:
