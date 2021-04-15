@@ -186,7 +186,7 @@ We will also present some relevant cases in which _pytprot_ can struggle to mode
 
 If we want to model the DNA-transcription Activation Subcomplex of _E. coli_, which is [3T72](https://www.rcsb.org/structure/3T72), _pytprot_ will most likely produce an error related to the chain ID's. This is a consequence of the input model having many more than 52 chains named differently, which is the maximum that _pytprot_ can take (See Theory & Analysis). Instead, what we can use for modelling is any of the **Biological assemblies**, also available to download from its PDB page. With this one, we are able to perfectly reconstruc it with _pytprot_:
 
-![3T72 complex](3T72.png)
+![3T72 complex](3T72.png = 50x)
 
 
 #### 4.1.2. Example 4: 6OM3, an example of a multicomplex made of assymmetric units
