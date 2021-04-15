@@ -1,30 +1,22 @@
 
 # Adding module location to sys.path
-import sys
-sys.path.append('/home/oth/anaconda3/lib/python3.8/site-packages')
-sys.path.append('/home/oth/BHS/PYT/1.project/SBI_PYT/PPI_main') # Path to I_O_args script
-sys.path.append('/home/oth/BHS/PYT/1.project/dash_test.py')
-sys.path.append('/home/oth/BHS/PYT/1.project/test_project.py')
-import os
-import numpy
-import scipy
-import parser as args
+import sys, os, re, numpy, scipy, io, datetime, webbrowser, base64, time, shutil
+#sys.path.append('/home/oth/anaconda3/lib/python3.8/site-packages/')
+#sys.path.append('/home/oth/BHS/PYT/1.project/pytprot/pytprot') # Path to the main script folder
+#sys.path.append('/home/oth/BHS/PYT/1.project/dash_test.py')
+#sys.path.append('/home/oth/BHS/PYT/1.project/test_project.py')
 from Bio.PDB import *
 from Bio.Seq import Seq
 from Bio import pairwise2 as pw2
+import inputfunctions, modelfunctions, chainfunctions
 
-# DASH IMPORTS
-import dash
+import dash, dash_component_unload
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from urllib.parse import quote as urlquote
 from flask import Flask, send_from_directory
-import plotly.express as px
-import webbrowser
-import base64
-import io
-import datetime
+#import plotly.express as px
 
 #############
 #   DASH    #
@@ -35,19 +27,28 @@ import datetime
 #######################################################################
 
 # Creating the upload directory, if it does not exist
-UPLOAD_DIRECTORY = "./project/app_uploaded_files"
+UPLOAD_DIRECTORY = "./app_uploaded_files/"
+FINAL_MODEL = UPLOAD_DIRECTORY + "built_models"
 
-if not os.path.exists(UPLOAD_DIRECTORY):
+if os.path.isdir(UPLOAD_DIRECTORY):
+    shutil.rmtree(UPLOAD_DIRECTORY)
+elif not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
+
+if not os.path.exists(FINAL_MODEL):
+    os.makedirs(FINAL_MODEL)
+
+
 
 # Flask server creation
 server = Flask(__name__)
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css'] # External CSS stylesheet
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets, server=server)
 
-@server.route("/download/<path:path>")
+@app.server.route("/downloads/<path:path>")
 def download(path):
-    return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
+    root_dir = os.getcwd()
+    return send_from_directory(os.path.join(root_dir, 'downloads'), path, as_attachment=True)
 
 
 # LAYOUT
@@ -60,18 +61,21 @@ app.layout = html.Div([
     """, style={'textAlign' : 'left', 'marginLeft': 50, 'marginTop': 80, 'marginRight': 10,
                 'color':'black', 'width': '80%'}),
 
+    html.Hr(style={"width": "80%", 'borderColor': 'black', 'align':'left'}),
+
     # MODEL INPUT
 
     html.Div([
         dcc.Markdown(children="""
-        ##### Introduce the **pdb files** to build the model with:
+        ##### Introduce the **pdb files** to build the model:
+        **(Optional)** You can also include the  **Stoichiometry .txt** file here
         """, style={'width': '80%', 'marginLeft': 50, 'textAlign': 'left', 'display':'inline-block'}),
 
         # UPLOAD
         html.Div([
                      dcc.Upload(
                 id='upload-data',
-                children=html.Div(['Drag and Drop or ', html.A('Select PDB Files')]),
+                children=html.Div(['Drag and Drop or ', html.A('Select PDB (and .txt) files')]),
                 style={'width': '70%',
                        'height': '60px',
                        'lineHeight': '60px',
@@ -84,37 +88,67 @@ app.layout = html.Div([
                        'background-color': 'white'},
                 multiple=True,
                 ),
-        dcc.Markdown(children="""
-        #### **File list**
-        """,
-                     style={'marginLeft': 50}),
-        html.Ul(id="file-list", style={'marginLeft': 50}),
-        html.Button('Run complex building', id='submit-run', n_clicks=0,
-                    style={'marginTop': 20, 'marginLeft': 50})
-        ],
+
+            html.Br(),
+
+            html.Div([
+                dcc.Markdown(children=""" 
+                ###### Multicomplex assembly parameters:
+                **NOTE:** If specific values are wanted, these must be indicated **before** loading the PDB files. 
+                """),
+
+                html.Div([
+
+                    html.Div([
+                        dcc.Markdown(children=""" **Contact distance: ** """),
+                        dcc.Input(id="dist-contact", type="number"),
+                    ]),
+
+                    html.Div([
+                        dcc.Markdown(children="""**Number of contacts: **"""),
+                        dcc.Input(id="num-contact", type="number"),
+                    ])
+
+                ], style={'columnCount': 2}),
+
+                html.Div(id="parameters-out"),
+
+                dcc.Markdown(children="""*By default, the contact distance is set to 12 (Å) 
+                                        and the number of contacts is set to 8 contacts*"""),
+
+            ], style={'marginLeft': 50, 'columnCount': 1, 'background-color':'beige', 'width':'70%'}),
+
+
+        html.Br(),
+
+
+        dcc.Markdown(children=""" **Upload information** """, style={'marginLeft': 50}),
+        html.Ul(id="file-list",
+                style={'marginLeft': 50,
+                       'background-color': 'white',
+                       'width':'30%',
+                       'borderWidth': '1px',
+                       'borderStyle':'dashed',
+                       'padding':'10px'
+                       })],
             ),
 
-    # RUN COMPLEX BUILDING Button
-    html.Div(id="start-button", children='Run model',
-                      style={'marginTop': 10, 'marginLeft': 50, 'color':'red'})
+        html.Br(),
 
-        ]),
+        dcc.Markdown(children=""" 
+        ##### **Models built** 
+        *In order to save any model, you can right-click on the name > Save link as...*
+        """, style={'marginLeft': 50}),
+
+        html.Ul(children="PDB files processed", id="pdb-process", style={'marginLeft': 50}),
+
+          ]),
+
+    html.Div(id="model-build"),
 
     html.Br(),
 
-    # PARAMETERS
-    #
-    dcc.Markdown(children="""Specify the different **parameters**:""",
-                 style={'textAlign': 'left', 'marginLeft': 50, 'marginTop': 30}),
-
-    dcc.Checklist(
-        options=[
-            {'label': 'Stoichiometry', 'value': 'sto'},
-            {'label': 'Forcing', 'value': 'for'},
-            {'label': 'verbose', 'value': 'ver'}
-        ],
-        labelStyle={'float': 'center', 'display':'inline-block', 'marginLeft': 50, 'marginBottom': 300})
-    ],
+],
     style={
         'columnCount': 1,
         'background-color':'beige'})
@@ -138,36 +172,86 @@ def save_file(name, content):
     with open(os.path.join(UPLOAD_DIRECTORY, name), "wb") as fp:
         fp.write(base64.decodebytes(data))
 
-def uploaded_files():
+def uploaded_pdb_files():
     """List files in the upload directory."""
     files = []
+    print("Searching for files....")
     for filename in os.listdir(UPLOAD_DIRECTORY):
+        #print(filename)
         path = os.path.join(UPLOAD_DIRECTORY, filename)
         if os.path.isfile(path):
+            #print(path, "THIS IS A FILE")
             files.append(filename)
+
+    print(files)
+
     return files
 
 def file_download_link(filename):
     """A Plotly Dash that downloads a file"""
-    location = "/download/{}".format(urlquote(filename))
+    location = "/app_uploaded_files/built_models/{}".format(urlquote(filename))
     return html.A(filename, href=location)
 
-# CALLBACK
+
+
+# MODEL PARSING FUNCTIONS
+def check_name(uploaded_files_list):
+    """ Given the uploaded data files, checks the ones that follow the naming convention"""
+
+    pattern = r"\w+(\.\w+\.\w+)?_(\w)_\w+\.pdb+(\.gz)?"
+    if len([file for file in uploaded_files_list if file.endswith(".pdb")]) == 1:
+        return [file for file in uploaded_files_list if file.endswith(".pdb")]
+    matches = [f for f in uploaded_files_list if re.match(pattern, f) is not None]
+    if len(matches) != 0:
+        return matches
+
+
+def get_pdb_structures(list_paths):
+    """ Given a list of pdb paths, it converts them o PDB.Bio.Structures and fetches the stoichiometry file"""
+
+    print("Fetching PDB files...")
+
+    list_pdb = [pdb for pdb in list_paths if pdb.endswith(".pdb")]
+
+
+    if len(list_pdb) != 1:
+        str_dict = {}
+        i = 0
+        for pdb in list_paths:
+            if pdb.endswith(".pdb"):
+                structure_name = (pdb.split("/"))[-1]
+                parser = PDBParser(PERMISSIVE=True, QUIET=True)
+                structure = parser.get_structure(structure_name, UPLOAD_DIRECTORY+pdb)
+                str_dict[UPLOAD_DIRECTORY+pdb] = structure  # Path+file as KEY, structure object as VALUE
+                i += 1
+
+        return str_dict
+
+    elif len(list_pdb) == 1:
+        str_dict = inputfunctions.macrocomplex_parser(UPLOAD_DIRECTORY, interact_dist=dist_contacts, interact_contacts=num_contacts,
+                                                     redundant_dist=1.9)
+        return str_dict
+
+
+def stoich_parser():
+
+    stoich_dict = {}
+
+    print("Parsing stoichiometry")
+    for filename in os.listdir(UPLOAD_DIRECTORY):
+        path = os.path.join(UPLOAD_DIRECTORY, filename)
+        if filename.endswith(".txt"):
+            stoich_dict = inputfunctions.stoichiometry_parser(path)
+
+    if len(stoich_dict) == 0:
+        return None
+    else:
+        return stoich_dict
+
+
+# CALLBACKS
 #######################################################################
 
-@app.callback(
-    dash.dependencies.Output('start-button', 'children'),
-    [dash.dependencies.Input('submit-run', 'n_clicks')]
-)
-def main_code_exec(n_clicks):
-    if n_clicks > 0:
-        with open(os.getcwd()) as infile:
-            exec(infile.read())
-    if n_clicks > 2:
-        return f"You are already running a macrocomplex. To run another one, you must wait until the current one is finished."
-
-
-input_files = []
 
 @app.callback(
     Output("file-list", "children"),
@@ -178,273 +262,141 @@ def update_output(uploaded_filenames, uploaded_file_contents):
     if uploaded_filenames is not None and uploaded_file_contents is not None:
         for name, data in zip(uploaded_filenames, uploaded_file_contents):
             save_file(name, data)
-
-    global input_files
-    input_files = [file for file in uploaded_files()]
-
-    if len(input_files) == 0:
-        return "No files found!"
     else:
-        return input_files
+        return "No files have been uploaded"
 
-#####################################################################################################################
-#####################################################################################################################
-#####################################################################################################################
+    stoich_file = [file for file in uploaded_pdb_files() if file.endswith("txt")]
+    input_files = check_name(uploaded_pdb_files())
 
-def input_ids():
-    print("These are the input files:\n")
-    print(input_files)
+    print("THESE ARE THE INPUT FILES:", input_files)
 
-print(f"#######################\nYou are now running the pytprot module..........\n#######################")
-input_ids()
-#pdblist = update_output()
-#print(pdblist)
+    try:
+        complex_name = input_files[0].split("_")[0]
+    except TypeError:
+        complex_name = input_files[0].split(".")[0] # for a marcocomplex input
 
-# ARGPARSER
-#options = args.output_argparser() # Object that contains all argument parsing functions
-#a = args.check_infile_names(options.infile) # Checking correct file-naming
+    ### CHANGE ALL THIS TO ANOTHER DASH OBJECT WITH A DIFFERENT ID, but
+    ### CHAIN IT TO THE OUTPUT OF THIS CALLBACK
 
+    if len(stoich_file) == 1:
+        if len(input_files) == 1:
+            return (html.P([f"The structure name is: {complex_name}", html.Br(),
+                        f"It is a multicomplex input.", html.Br(),
+                        f"Stoichiometry file found.", html.Br(),
+                        "Begin complex building..."]))
+        else:
+            return (html.P([f"The structure name is: {complex_name}", html.Br(),
+                        f"Contains {len(input_files)} pairs of interacting chains.", html.Br(),
+                        f"Stoichiometry file found.", html.Br(),
+                        "Begin complex building..."]))
 
-
-# DUMMY INPUT (This works, as a backup)
-inputfiles_basic = [file for file in os.listdir('/home/oth/BHS/PYT/1.project/SBI_PYT/tests/examples/1gzx')]
-path_basic = '/home/oth/BHS/PYT/1.project/SBI_PYT/tests/examples/1gzx/'
-
-
-# List of files
-pdblist = []
-#for pdbfile in os.listdir(infiles_dash):
-#    pdblist.append(str(options.infile+pdbfile)) # List of PDBs with their path
-
-for file in inputfiles_basic:
-    pdblist.append(str(path_basic+file)) # List of PDBs with their path
-
-print(pdblist)
-
-
-
-# PDBLIST IS THE OBJECT USED AS AN INPUT
-
-
-# Dictionary with files and their PDB models
-i = 0
-dictmodels = {}
-for pairs in pdblist:
-    #final_name = pairs.split("/")[-1] # Better to not split it, actually
-    final_name = pairs
-    dictmodels[final_name]= []
-    parser = PDBParser(PERMISSIVE=True, QUIET=False)
-    structure = parser.get_structure(f"TEST_{i}", pairs)
-    model = structure[0]
-    model.id = i
-    dictmodels[final_name] = model # Path+file as KEY, model object as VALUE
-    i += 1
-
-#print(dictmodels.items())
+    elif len(stoich_file) == 0:
+        if len(input_files) > 1:
+            (html.P([f"The structure name is: {complex_name}", html.Br(),
+                     f"It is a multicomplex input.", html.Br(),
+                     f"No stoichiometry file found.", html.Br(),
+                     "Begin complex building..."]))
+        else:
+            return (html.P([f"The structure name is: {complex_name}", html.Br(),
+                        f"Contains {len(input_files)} pairs of interacting chains.", html.Br(),
+                        f"No stoichiometry file found.", html.Br(),
+                        "Begin complex building..."]))
 
 
-# Stechiometry reading
+@app.callback(
+    Output("parameters-out", "children"),
+    [Input("dist-contact", "value"), Input("num-contact", "value")]
+)
+def parameter_parse(dist_contact, number_contacts):
+    """ Fetch the relevant parameteres for multicomplex building """
+    global dist_contacts
+    global num_contacts
 
-"""stechio_dict = {}
-stech = options.stechiometry
-total_subunits = 0
+    dist_contacts = dist_contact
+    num_contacts = number_contacts
 
-try:
-    for line in open(stech):
-        letter = line.split(":")[0].rstrip()
-        num = int(line.split(":")[1].rstrip())
-        stechio_dict[letter] = num
-        total_subunits = sum(stechio_dict.values())
-except TypeError:
-    pass"""
-
-####################
-#   FUNCTIONS      #
-####################
-
-
-def similar_chains(input_pdb_dict):
-    """
-    Given an dictionary of PDB files as Keys, and their Structure objects as values, this function
-    makes pairwise alignments between the chains, keeping only those with a 95% or higher
-    similarity.
-    """
-    similar_chains = {}
-    ppb = PPBuilder()
-    model_list = [model for model in input_pdb_dict.values()]
-    total_chains = []
-    for model in model_list:
-        for chain in model:
-            total_chains.append(chain)
-    for c, chain in enumerate(total_chains):
-        for pp in ppb.build_peptides(chain):
-            seq1 = pp.get_sequence()
-            #print(chain)
-            for chain2 in total_chains[c+1:]:
-                if chain2.id != chain.id:
-                    for pp in ppb.build_peptides(chain2):
-                        seq2 = pp.get_sequence()
-                        #print(f"\t\t{chain2}")
-                        alignments = pw2.align.globalxx(seq1, seq2, score_only = True)
-                        #print(pw2.format_alignment(*alignments[0]))
-                        max_length = min(len(seq1), len(seq2))
-                        identity_perc = round(alignments / max_length, 2)
-                        #print(identity_perc)
-                        if identity_perc > 0.95:
-                            similar_chains.setdefault(chain, chain2)
-    return similar_chains
+    if dist_contacts is None and num_contacts is None:
+        dist_contacts = 12
+        num_contacts = 8
+        return None
+    elif dist_contacts is not None and num_contacts is not None:
+        return f"The contact distance is set to {dist_contact} (Å). The number of contacts is set to {num_contacts}."
 
 
-# Alignment funciton test:
-#for x, y in similar_chains(dictmodels).items():
-#    print(x, y)
 
-# IMPROVEMENTS:
-# Crear un archivo con los alineamientos. O a lo mejor ocupa mucha memoria. Ponerlo como optional argument.
-# INPUT AS A LIST, this way it's easire to avoid repeating unnecessary comparisons
-
-
-def check_type(input_pdb_file):
-    """
-    Given a PDB file, it checks if it pertains to a DNA or protein structure.
-    :param input_pdb_file:
-    :return: structure object
-    """
-    i = 0
-    final_name = input_pdb_file.split("/")[-1] # Only keep name, not full path
-    structure = PDBParser(PERMISSIVE=True, QUIET=True).get_structure(f"model_{i}", input_pdb_file)
-    atoms = structure[0].get_atoms()
-    for x in atoms:
-        if x.get_id() == "CA":
-            print(f"{final_name} is a PROTEIN file") # Print optional
-            return f"Protein"
-        if x.get_id() == "P":
-            print(f"{final_name} is a DNA file") # Print optional
-            return f"DNA"
-
-def change_chain_id(input_pdb_files):
-    """
-    Given a list of .pdb files, the Chain IDs are converted from a letter format to a numeric format
-    :param input_pdb_file: 
-    :return: A list of Structures
-    """
-    struct_list = []
-    i = 1
-    j = 0
-    while i < len(input_pdb_files)*2: # As we will always have 2 chains per file
-        for file in input_pdb_files:
-            structure = PDBParser(PERMISSIVE=True, QUIET=True).get_structure(f"model_{j}", file)
-            chains = structure[0].get_chains()
-            j += 1
-            for ch in chains:
-                ch.id = i # replace chain ID with number
-                i += 1 # i will keep increasing depending on the number of models
-            struct_list.append(structure)
-            break
-
-    # IMPROVEMENT: Cambiar la letra por su posición en el abecedario? De esa manera
-    # si tenemos varias "A" todas se cambiarían por 1, pero no sé si esto es
-    # realmente necesario o no
-
-    return struct_list
-
-# Chain ID change test
-#
-"""for x in change_chain_id(pdblist):
-    print(x.get_id())
-    for ch in x.get_chains():
-        print(ch.get_id())"""
-
-"""for x,y in dictmodels.items():
-    print(x)
-    for ch in y.get_chains():
-        print(ch)"""
+@app.callback(
+    Output("pdb-process", "children"),
+    Input("file-list", "children")
+)
+def pdb_processing(input_files):
+    """ Given a list of PDBs, these are processed and their names returned"""
 
 
-models = [model for id, model in dictmodels.items()]
-
-def common_chain_res(chain1, chain2):
-    """
-    Given a pair of chains, obtains the common residues and their respective CA atoms.
-    Returns a tuple with two lists: The first one contains the list of atoms corresponding
-    to the first chain. The second list contains the list of atoms of the second chain.
-    :param chain1:
-    :param chain2:
-    :return:
-    """
-    res1 = [res for res in chain1 if res["CA"]]
-    res2 = [res for res in chain2 if res["CA"]]
-    common_res1 = [res1 for res1, res2 in zip(res1, res2) if res1.get_resname() == res2.get_resname()]
-    common_res2 = [res2 for res1, res2 in zip(res1, res2) if res1.get_resname() == res2.get_resname()]
-
-    chain1_atoms_list = [res["CA"] for res in common_res1]
-    chain2_atoms_list = [res["CA"] for res in common_res2]
-    common_atoms = (chain1_atoms_list, chain2_atoms_list)
-
-    return common_atoms
-
-# Common atoms test
-
-chain1 = []
-for chains in models[0].get_chains():
-    chain1.append(chains)
-
-chain2 = []
-for chains in models[1].get_chains():
-    chain2.append(chains)
-
-#common_atoms = common_chain_res(chain2[1], chain1[1]) # Between chains C and B
+    pdb_files = get_pdb_structures(uploaded_pdb_files())
+    stoich_dict = stoich_parser()
+    equiv_chains, pdb_dict = inputfunctions.chain_processing(pdb_files)
 
 
-def superimpose(chain1, chain2):
-    """
-    Given a pair of chains, these are superimposed. The first input is the
-    fixed chain, and the second one the moving chain. The rotran matrix is computed, applied to the
-    second chain, and then the RMSD is computed.
-    :param :
-    :return: RMSD score between structures
-    """
+    # different chains
 
-    # Set fixed, moving models
-    fixed_chain = chain1
-    moving_chain = chain2
+    diff_chains = set()
+    for struct in pdb_dict.values():
+        for chain in struct.get_chains():
+            diff_chains.add(chain)
 
-    # Create the LIST OF ATOMS to be aligned
-    fixed_atoms = [res["CA"] for res in chain1]
-    moving_atoms = [res["CA"] for res in chain2]
+    # similar chains
 
-    # When superimposing chains are not equally sized
-    if len(fixed_atoms) != len(moving_atoms):
-        common_atoms = common_chain_res(fixed_chain, moving_chain)
+    print("Looking for similar chains...")
 
-        imposer = Superimposer()
-        imposer.set_atoms(common_atoms[0], common_atoms[1])
-        imposer.apply(fixed_chain.get_atoms())
-        print(imposer.rms)
+    ##### SIMILAR SEQUENCE CHAINS
+    ### Obtain high-sequence (>95%) similarity chains from the interacting pairs
+    try:
+        similar_chains_prot = chainfunctions.similar_chains(pdb_dict, "Protein")  # Protein
+        similar_chains_dna = chainfunctions.similar_chains(pdb_dict, "DNA")  # Nucleic acids
 
-    # If they are the same size
+        # Merge both dictionaries
+        similar_chains = similar_chains_prot
+        similar_chains.update(similar_chains_dna)
+    except IndexError:
+        return None
+
+
+    # unicommons
+    unicommon = chainfunctions.unique_common_chains(similar_chains)
+    if stoich_dict is not None:
+        unicommon = chainfunctions.unicommon_completer(unicommon, stoich_dict, diff_chains)
+
+    # stoich check:
+    if stoich_dict is not None:
+        stch_check = chainfunctions.stoichiometry_check_simple(unicommon, stoich_dict)
+        if stch_check == True:
+            pass
+        else:
+            print("Stoichiometry provided is incorrect")
+
+        final_model = modelfunctions.model_construction(unicommon, pdb_dict, equiv_chains,
+                                                        stoichiometry_input=stoich_dict,
+                                                        forcing=True)
     else:
-        imposer = Superimposer()
-        imposer.set_atoms(fixed_atoms, moving_atoms)
-        imposer.apply(fixed_chain.get_atoms())
-        print(imposer.rms)
+        final_model = modelfunctions.model_construction(unicommon, pdb_dict, equiv_chains,
+                                                        forcing=False)
 
-# Superimpose test
-#superimpose(chain2[1], chain1[0])
+    if len(check_name(uploaded_pdb_files())) == 1:
+        modelfunctions.save_model(final_model, uploaded_pdb_files(), outdir=FINAL_MODEL)
+    else:
+        modelfunctions.save_model(final_model, uploaded_pdb_files()[1:], outdir=FINAL_MODEL)
 
+
+    new_model_chains = [ch for ch in final_model.get_chains()]
+
+    print(f"NEW MODEL WITH:\n{len(new_model_chains)} CHAINS\nWHICH ARE: {new_model_chains}")
+    print("Saving the structure...")
+
+    return [html.Li(file_download_link(filename)) for filename in os.listdir(FINAL_MODEL)]
 
 # FOR THE DASH APP TEST #
-#if __name__ == '__main__':
+if __name__ == '__main__':
     #dt.Timer(10, dt.open_browser).start()
     #dt.app.run_server(debug=True, port=dt.port) # Hot reloading
-#    app.run_server(debug=True)
-#    print("Running the server")
-
-
-from modeller import *
-
-
-
-
-
-
+    app.run_server(debug=True)
+    print("Running the server")

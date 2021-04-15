@@ -6,9 +6,7 @@
 import sys
 sys.path.append('/home/oth/anaconda3/lib/python3.8/site-packages') # Add anaconda path
 
-import argparse
-import os
-import re
+import argparse, os, re, shutil
 
 # 1. INPUT / OUTPUT INTERFACE
 ##############################
@@ -51,6 +49,8 @@ def create_outdir(string, forcing = False, exiting = False):
 
     if forcing == True:
         if os.path.exists(path):
+            if os.path.isdir(path):
+                shutil.rmtree(path)
             os.makedirs(path, exist_ok=True)
             sys.stderr.write("\t-f flag used: The output directory will be overwritten.\n")
             sys.stderr.flush()
@@ -63,17 +63,22 @@ def check_infile_names(string):
     #file_re = re.compile("(((\w+\.\w+\.\w+)?)(_\w_\w))\.pdb+(\.gz)?")
     #file_re = re.compile("(\w+)\.\w+\.(\w+)_(\w)_\w+\.pdb+(\.gz)?")
 
-    pattern = r"\w+(\.\w+\.\w+)?_(\w)_\w+\.pdb+(\.gz)?"
-    matches = [str(string) + "/" + f for f in os.listdir(string) if re.match(pattern, f) is not None]
-    if len(matches) != 0:
-        sys.stderr.write("\tPDB input files named correctly!\n\n")
-    elif len(matches) == 0:
-        sys.stderr.write("\tNo PDB files found... Check the naming convention\n\n")
-        exit()
+    if len(os.listdir(string)) == 1:
+        sys.stderr.write("\tOnly one PDB found: Assuming macrocomplex input...")
+        sys.stderr.flush()
+        return [string]
+    else:
+        pattern = r"\w+(\.\w+\.\w+)?_(\w)_\w+\.pdb+(\.gz)?"
+        matches = [str(string) + "/" + f for f in os.listdir(string) if re.match(pattern, f) is not None]
+        if len(matches) != 0:
+            sys.stderr.write("\tPDB input files named correctly!\n\n")
+        elif len(matches) == 0:
+            sys.stderr.write("\tNo PDB files found... Check the naming convention\n\n")
+            exit()
 
-    sys.stderr.flush()
+        sys.stderr.flush()
 
-    return matches
+        return matches
 
     #for filename in os.listdir(string):
     #    m = file_re.match(filename)
@@ -111,8 +116,8 @@ def output_argparser():
                         type=dir_path,
                         help="Input set of PDB structure files.") # The files must follow a specific structure
 
-    parser.add_argument('-s', '--stechiometry',
-                        dest="stechiometry",
+    parser.add_argument('-s', '--stoichiometry',
+                        dest="stoichiometry",
                         action="store",
                         type=str,
                         default=None,
@@ -138,6 +143,32 @@ def output_argparser():
                         default=False,
                         help="Print log in stderr.")
 
+    parser.add_argument('-m', '--macrocomplex',
+                        dest="macrocomplex",
+                        action="store_true",
+                        default=False,
+                        help="Indicate if the input structure is, in fact, a macrocomplex.")
+
+    parser.add_argument('-opt', '--optimization',
+                        dest="optimization",
+                        action="store_true",
+                        default=False,
+                        help="Refine the model through MODELLER.")
+
+    parser.add_argument('-d', '--contact_dist',
+                        dest="contact_distance",
+                        action="store",
+                        default=12,
+                        type=int,
+                        help="define the distance threshold for two chains to interact")
+
+    parser.add_argument('-cn', '--contact_num',
+                        dest="contact_num",
+                        action="store",
+                        default=8,
+                        type=int,
+                        help="define number of contacts for two chains to interact")
+
     # Store parser arguments in options object
     #
     args = parser.parse_args()
@@ -150,8 +181,3 @@ def output_argparser():
         create_outdir(args.outdir, exiting=True) # If -f flag not used and exiting is stated
 
     return args # returns the argparse object
-
-
-
-
-
