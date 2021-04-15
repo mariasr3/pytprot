@@ -177,7 +177,9 @@ This will prompt, on the command line, a link that, when clicked, will open a ta
 
 ![pytprot Dash GUI](pytprot.png)
 
-Using the app is quite simple, we will first need to upload the corresponding PDB and stoichiometry files (*It is advisable to upload them all at once*). It automatically detects, depending on the number of files, if the input is a set of interacting chain-pairs or a macrocomplex. If it is the latter case, we can also indicate the contact distance or the number of contacts in the **Multicomplex assembly parameters**. **NOTE:** The contact distance and number of contact parameters, if different from the default ones, must be indicated **before** uploading the files.
+Using the app is quite simple, we will first need to upload the corresponding PDB and stoichiometry files (*It is advisable to upload them all at once*). It automatically detects, depending on the number of files, if the input is a set of interacting chain-pairs or a macrocomplex. If it is the latter case, we can also indicate the contact distance or the number of contacts in the **Multicomplex assembly parameters**. 
+
+**NOTE:** The contact distance and number of contact parameters, if different from the default ones, must be indicated **before** uploading the files.
 
 The **Upload information** window shows some basic information regarding the input files.
 
