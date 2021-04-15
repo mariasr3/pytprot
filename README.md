@@ -45,10 +45,10 @@ For Unix users, _pytprot_ can run without specifically invoking the Python3 inte
 
 ```
 chmod +x ./path/to/pytprot/pytprot.py
-
+chmod +x ./path/to/pytprot/pytprot_dash.py
 ```
 
-Once this is done, we can just run _pytprot_ from any directory within the system with:
+Once this is done, we can just run _pytprot_, and is Dash GUI, from any directory within the system with:
 
 ```
 pytprot.py -i input/path -o output/path 
@@ -186,9 +186,11 @@ We will also present some relevant cases in which _pytprot_ can struggle to mode
 
 #### 4.1.2. Example 3: 3T72, a RMN-based input
 
-If we want to model the DNA-transcription Activation Subcomplex of _E. coli_, which is [3T72](https://www.rcsb.org/structure/3T72), _pytprot_ will most likely produce an error related to the chain ID's. This is a consequence of the input model having many more than 52 chains named differently, which is the maximum that _pytprot_ can take (See Theory & Analysis). Instead, what we can use for modelling is any of the **Biological assemblies**, also available to download from its PDB page. With this one, we are able to perfectly reconstruc it with _pytprot_:
+If we want to model the DNA-transcription Activation Subcomplex of _E. coli_, which is [3T72](https://www.rcsb.org/structure/3T72), _pytprot_ is also able to do so. Even if it has numbers as chain IDs, the program can still recontruct the model seamlessly, as shown:
 
-<img src="./images/3T72_1.png" alt="3T72 complex" width="300">
+<img src="./images/3t72_final.png" alt="3T72 complex" width="300">
+
+This example was introduced in order to show how structures that are produced from NMR technologies, can also be employed as an input.
 
 
 #### 4.1.2. Example 4: 6OM3, an example of a multicomplex made of assymmetric units
