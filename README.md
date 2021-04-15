@@ -194,6 +194,8 @@ If we want to model the DNA-transcription Activation Subcomplex of _E. coli_, wh
 Another limitation of the program is that it cannot correctly model for proteins whose Biological Assembly is composed of the combination of different. For example, for the Orc1 BAH domain (in complex with a nucleosome), which is [6OM3](https://www.rcsb.org/structure/6OM3) from NCBI. If we download the PDB, it contains two assymmetric units, which form the actual biological assembly. _pytprot_ can, without indicating the stoichiometry, provide a model that contains both subunits, although wrongly placed:
 
 ![6om3 complex](6om3_complete_nostoich.png)
+<img src="6om3_complete_nostoich.png" alt="6om3 complex" width="100">
+
 
 With the way _pytprot_ fetches the stoichiometry, it is not possible to correctly build the model. Nevertheless, if we download one the asymmetric units, which are found in its same PDB page, it can be almost perfectly built with _pytprot_, whenever stoichiometry is provided:
 
@@ -215,7 +217,6 @@ This will prompt, on the command line, a link that, when clicked, will open a ta
 
 ![pytprot Dash GUI](pytprot.png)
 
-<img src="pytprot.png" alt="pytprot Dash GUI" width="20" height="30">
 
 
 
