@@ -117,7 +117,7 @@ Which will display the following arguments:
 
 - **-i INFILE or --input-directory INFILE**: Required. The user must provide a directory which contains the input files. **NOTE**: Said input files need to follow the correct naming convention. If not, these will not be accepted by the program.
 - **-s or --stoichiometry**: Optional. The user can handle an input **.txt file** with the model stoichiometry. It also has to follow a specific structure, as shown in the sample stoichiometry file in the package directory.
-- **-f or --force**: Optional. It forces the creation of an output directory. If it already exists, the contents are overwritten. 
+- **-f or --force**: Optional. It forces the creation of an output directory. If it already exists, the contents of said directory are overwritten.
 - **-o OUTDIR or --output-directory OUTDIR**: Required. The user must provide an ouput directory where the output files will be stored. If the output directory already exists, and the "force" flag has not been activated, the program will terminate.
 - **-v or --verbose**: Optional. It prints in the terminal some information about the process. 
 - **-m or --macrocomplex**: Optional. If the input file is a macrocomples, the user should use this option to indicate it. 
@@ -126,7 +126,7 @@ Which will display the following arguments:
 
 #### 4.1.1. Example 1: 1GZX, interacting chains input
 
-In order to show the basic functioning of the program, we will use the [1gzx](https://www.rcsb.org/structure/1GZX) structure, which is the T-state haemoglobin, which is a hetero-4-mer. As an input, we have three .pdb files with interacting chains (1gzx_A_B.pdb, 1gzx_A_C.pdb, 1gzx_A_D.pdb) within a folder named "1gzx", and a stoichiometry file (1gzx_stoichiometry.txt). We will assume that pytprot is being executed from the installation folder named *pytprot*.
+In order to show the basic functioning of the program, we will use the [1gzx](https://www.rcsb.org/structure/1GZX) structure, which is the T-state haemoglobin, which is a hetero-4-mer. As an input, we have three .pdb files with interacting chains (1gzx_A_B.pdb, 1gzx_A_C.pdb, 1gzx_A_D.pdb) provided by our teachers, within a folder named "1gzx", and a stoichiometry file (1gzx_stoichiometry.txt). We will assume that pytprot is being executed from the installation folder named *pytprot*.
 
 In order to run pytprot, we will need to open the terminal and write:
 
@@ -150,7 +150,7 @@ This process is identical, even for larger proteins that also contain DNA.
 
 #### 4.1.2. Example 2: 6GMH, multicomplex input
 
-In order to also show how the program can work with macrocomplexes, we will use [**6gmh**](https://www.rcsb.org/structure/6gmh), which is the structure for the Activated Transcription Complex Pol II, and a hetero-20-mer. Here, we will only use one file, "6gmh.pdb", in a folder named "6gmh", and a stoichiometry file, "6gmh_stoichiometry.txt". We will assume that pytprot is being executed from the installation folder named *pytprot*. 
+In order to also show how the program can work with macrocomplexes, we will use [**6gmh**](https://www.rcsb.org/structure/6gmh), which is the structure for the Activated Transcription Complex Pol II, and a hetero-20-mer, that we have retrieved from the PDB. Here, we will only use one file, "6gmh.pdb", in a folder named "6gmh", and a stoichiometry file, "6gmh_stoichiometry.txt". We will assume that pytprot is being executed from the installation folder named *pytprot*. 
 
 To run it:
 
@@ -159,7 +159,7 @@ python3 ./pytprot/pytprot.py -i ./example_files/6gmh -o ./example_output_files -
 
 ```
 
-We have indicated the input, output file and the **-f** flag the same way as before. As this is a macrocomplex, we will need to indicate the **-m** flag. Within the macrocomplex processsing, we can indicate a specific contact distance (Å) with **-d** and a specific number of contacts with **-nc**. For this example, we will assume two chains to be interacting if there are 5 or more contacts at 8 Å between their CA backbone. As the **-v** flag is set, when running the program, we will see the processing information on the Terminal. After it finishes running, the output model will be saved with a timestamp and the number of chains that the model has. 
+We have indicated the input, output file and the **-f** flag the same way as before. As this is a macrocomplex, we will need to indicate the **-m** flag. Within the macrocomplex processsing, we can indicate a specific contact distance (Å) with **-d** and a specific number of contacts with **-nc**. For this example, we will assume two chains to be interacting if there are 5 or more contacts at 8 Å between their CA backbone. As the **-v** flag is set, when running the program, we will see the processing information on the Terminal. After it finishes running, the output model will be saved with a timestamp and the number of chains that the model has, in the provided output folder.
 
 
 
@@ -183,5 +183,5 @@ Using the app is quite simple, we will first need to upload the corresponding PD
 
 The **Upload information** window shows some basic information regarding the input files.
 
-After processing the model, its filename will appear under the **Models built** section. In order to access it, we will need to retrieve it from the corresponding folder.
+After processing the model, its filename will appear under the **Models built** section. In order to access it, we will need to retrieve it from the "app_uploaded_files/built_models" folder located in the current working directory, or through the link that Dash returns after building the model.
 
