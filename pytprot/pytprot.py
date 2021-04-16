@@ -71,7 +71,8 @@ if options.macrocomplex:
         for chain in str.get_chains():
             diff_chains.add(chain)
 
-    print(f"We have {len(diff_chains)} different chains.")
+    if options.verbose:
+        print(f"We have {len(diff_chains)} different chains.")
 
 
 
@@ -115,12 +116,6 @@ if options.stoichiometry:
 
     stoichiometry_input = inputfunctions.stoichiometry_parser(options.stoichiometry)
 
-    print(f"The provided stechiometry is:")
-    for id, count in stoichiometry_input.items():
-        print(f"{id}\t{count}")
-    print("\n")
-
-
     # Complete unicommons
 
     diff_chains = set()
@@ -130,14 +125,9 @@ if options.stoichiometry:
 
     unicommon = chainfunctions.unicommon_completer(unicommon, stoichiometry_input, diff_chains)
 
-
-    print("MODIFIED UNICOMMONS")
-
-    for x, y in sorted(unicommon.items(), key=lambda x:x[0]):
-        print(x, y)
-
 else:
-    print("No stoichiometry provided... The model will add as many input chains as possible.")
+    if options.verbose:
+        print("No stoichiometry provided... The model will add as many input chains as possible.")
 
 
 ## model construction

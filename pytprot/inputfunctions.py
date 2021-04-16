@@ -142,7 +142,7 @@ def stoichiometry_parser(stoichiometry_file):
 # the macrocomplex_parser and pdb_parser functions
 ################
 
-def chain_processing(str_dict, verbose=True):
+def chain_processing(str_dict, verbose=False):
     """
     Given a dictionary with pdb structures of interacting pairs (a "str_dict" type of dictionary), this function:
     1. Creates the equivalence dictionary between alphabetical and numerical chain IDs.
@@ -163,14 +163,6 @@ def chain_processing(str_dict, verbose=True):
     equivalence_chains = {}
 
     eq_str_dict = copy.deepcopy(str_dict)  # deepcopy in order to have different id() for the object and all references
-
-    #for struct in eq_str_dict.values():
-    #    for chains in struct.get_chains():
-    #        chains2 = chains.copy()  # Work with the copies to not modify the original chain
-    #        new_chain = chains.copy()
-    #        if not isinstance(chains.id, int):  # Filtering any possible numerical ID
-    #            chains.id = alphabet.find(str(new_chain.id))
-    #            str_dict_final[name] = struct_copy
 
     i = 0
     for struct in eq_str_dict.values():
@@ -271,8 +263,7 @@ def mutate_dna_chain(input_chain):
                     atom.id = "CA"
 
         return new_chain
-    else:
-        print("The chain introduced was not a Protein chain nor an Nucleotide chain.")
+
 
 
 def acnucseq_from_pdb(input_chain):

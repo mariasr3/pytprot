@@ -136,7 +136,7 @@ def superimpose(chain1, chain2):
     If the input chains are empty, it returns None.
     """
 
-    print("Superimposing the structures...")
+    #print("Superimposing the structures...")
 
 
     # Set fixed, moving models
@@ -211,7 +211,6 @@ def clash_list (chain1, list_chains, dist=2.5):
     Returns an integer representing the number of structures with which this input chain finds clashes.
     """
 
-    print("Obtaining the clashes....")
     clash_count = 0
 
     atoms1 = [atom for atom in chain1.get_atoms()]
@@ -230,7 +229,7 @@ def clash_list (chain1, list_chains, dist=2.5):
                     neighbors.add(x)
 
         if len(neighbors) != 0:
-            print(f"The chain with which there are clashes is {chain2}")
+            #print(f"The chain with which there are clashes is {chain2}")
             clash_count += 1
 
     return clash_count
@@ -418,7 +417,7 @@ def model_construction(unicommon, pdb_dict, equivalent_chains, stoichiometry_inp
 
     # If stoichiometry is provided and correct it will "force" chains of unicommons to be added to the model until the stoichiometry is completed
     if forcing and stoichiometry:
-        if stch_check == True:
+        if stch_check == True and verbose:
             print("Force the model")
             chains_to_model = []
             for key, values in unicommon.items(): #iterate through keys
@@ -457,7 +456,7 @@ def model_construction(unicommon, pdb_dict, equivalent_chains, stoichiometry_inp
                         # If not the chain will be added to the model
                         new_model_chains.append(chain_to_add)
                         new_model.add(chain_to_add)
-                        print(f"{chain_to_add} has been added to the model")
+                        #print(f"{chain_to_add} has been added to the model")
                         if inputfunctions.check_type(chain_to_add) == "Protein": # Update the stoichiometry
                             if key_val.id not in current_stoich:
                                 current_stoich[key_val.id] = 1

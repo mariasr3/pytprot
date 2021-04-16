@@ -269,18 +269,10 @@ def unicommon_completer(unicommon, stoichiometry_input, diff_chains):
 
 
     unicommon_keys = set([ch.id for ch in unicommon.keys()])
-    print(f"These are the different chain IDs in unicommons: {unicommon_keys}")
-
-    print(f"These are the different chain IDs: {diff_chains}")
-
-
 
     for stoich_input_key in list(stoichiometry_input.keys()):
-        print(f"This is the input key:{stoich_input_key}")
         if stoich_input_key not in unicommon_keys:
-            print(f"{stoich_input_key} is missing from unicommons")
             new_chain = [ch for ch in diff_chains if ch.id == stoich_input_key]
-            print(new_chain)
             if len(new_chain) != 0:
                 unicommon[new_chain[0]] = []
 
